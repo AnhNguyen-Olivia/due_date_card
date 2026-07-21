@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Due Date Card — Checkout Desk</title>
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --wood: #5b3f2e;
+    --wood-dark: #402c20;
+    --card: #ecdfc0;
+    --card-shadow: #cbb98f;
+    --ink-green: #1f4d3d;
+    --ink-amber: #8a5a1e;
+    --ink-red: #8b2e22;
+    --ink-black: #201c16;
+    --paper-line: #b9a978;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    min-height:100vh;
+    background:
+      linear-gradient(180deg, var(--wood) 0%, var(--wood-dark) 100%);
+    font-family:'Libre Baskerville', serif;
+    color:var(--ink-black);
+    padding: 24px 12px 60px;
+    display:flex;
+    justify-content:center;
+  }
+  .desk{
+    width:100%;
+    max-width:760px;
+  }
+  .signage{
+    text-align:center;
+    margin-bottom:20px;
+  }
+  .signage h1{
+    font-family:'Special Elite', monospace;
+    color:#f1e6c8;
+    font-size:26px;
+    letter-spacing:0.08em;
+    margin:0;
+    text-shadow: 0 2px 0 rgba(0,0,0,0.4);
+  }
+  .signage .sub{
+    font-family:'Courier Prime', monospace;
+    color:#c9b98f;
+    font-size:11.5px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    margin-top:4px;
+  }
+
+  /* CHECKOUT CARD (the form) */
+  .checkout-card{
+    background: var(--card);
+    border: 1px solid var(--paper-line);
+    box-shadow: 0 8px 0 var(--card-shadow), 0 12px 24px rgba(0,0,0,0.4);
+    padding: 20px 22px 18px;
+    position:relative;
+    margin-bottom: 34px;
+  }
+  .checkout-card::before{
+    content:"";
+    position:absolute;
+    top:0; left:0; right:0;
+    height:6px;
+    background: repeating-linear-gradient(90deg, var(--wood-dark) 0 10px, transparent 10px 20px);
+    opacity:0.15;
+  }
+  .field-label{
+    font-family:'Courier Prime', monospace;
+    font-size:10px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:#6b5a38;
+    margin-bottom:4px;
+  }
+  input[type=text]{
+    width:100%;
+    font-family:'Libre Baskerville', serif;
+    font-size:17px;
+    padding:8px 4px;
+    border:none;
+    border-bottom: 2px solid var(--wood);
+    background:transparent;
+    color:var(--ink-black);
+    margin-bottom:14px;
+  }
+  input[type=text]:focus{outline:none; border-bottom-color:var(--ink-green);}
+
+  .due-options{
+    display:flex;
+    gap:10px;
+    margin-bottom:16px;
+  }
+  .due-btn{
+    font-family:'Courier Prime', monospace;
+    font-size:12px;
+    padding:7px 12px;
+    border:1.5px solid var(--wood);
+    background:transparent;
+    cursor:pointer;
+    color:var(--ink-black);
+    transition: all .15s ease;
+  }
+  .due-btn.active{
+    background: var(--ink-green);
+    border-color: var(--ink-green);
+    color:#f1e6c8;
+  }
+  .due-btn:hover{transform: translateY(-1px);}
+
+  .stamp-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-top:6px;
+  }
+  .stamp-btn{
+    font-family:'Special Elite', monospace;
+    font-size:14px;
+    letter-spacing:0.05em;
+    background: var(--ink-red);
+    color:#f1e6c8;
+    border:none;
+    padding:12px 20px;
+    cursor:pointer;
+    box-shadow: 0 4px 0 #5e1a12;
+    position:relative;
+  }
+  .stamp-btn:active{transform: translateY(3px); box-shadow: 0 1px 0 #5e1a12;}
+
+  .stamp-graphic{
+    position:absolute;
+    width:120px;
+    height:120px;
+    right: 40px;
+    top: -30px;
+    opacity:0;
+    pointer-events:none;
+    transform-origin: center;
+  }
+
+  /* SHELF */
+  .shelf-header{
+    font-family:'Special Elite', monospace;
+    color:#f1e6c8;
+    font-size:14px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    margin: 0 0 14px 2px;
+    border-bottom: 2px dashed #8a7550;
+    padding-bottom:8px;
+  }
+  .card-item{
+    background: var(--card);
+    border:1px solid var(--paper-line);
+    box-shadow: 0 4px 0 var(--card-shadow), 0 6px 14px rgba(0,0,0,0.3);
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    position:relative;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:14px;
+    animation: dropIn .4s ease;
+  }
+  @keyframes dropIn{
+    from{ transform: translateY(-16px); opacity:0; }
+    to{ transform: translateY(0); opacity:1; }
+  }
+  .card-item.returning{
+    animation: returnOut .35s ease forwards;
+  }
+  @keyframes returnOut{
+    to{ transform: translateX(40px) rotate(3deg); opacity:0; }
+  }
+  .ci-left{flex:1;}
+  .ci-title{
+    font-size:16px;
+    font-weight:700;
+    margin-bottom:2px;
+  }
+  .ci-meta{
+    font-family:'Courier Prime', monospace;
+    font-size:10.5px;
+    color:#6b5a38;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+  }
+  .ci-stamp{
+    font-family:'Special Elite', monospace;
+    font-size:11.5px;
+    letter-spacing:0.06em;
+    padding:6px 10px;
+    border: 2px solid;
+    transform: rotate(-4deg);
+    white-space:nowrap;
+    text-transform:uppercase;
+  }
+  .ci-stamp.green{color:var(--ink-green); border-color:var(--ink-green);}
+  .ci-stamp.amber{color:var(--ink-amber); border-color:var(--ink-amber);}
+  .ci-stamp.red{color:var(--ink-red); border-color:var(--ink-red); animation: pulse 1.4s infinite;}
+  @keyframes pulse{
+    0%,100%{opacity:1;}
+    50%{opacity:0.55;}
+  }
+  .return-btn{
+    font-family:'Courier Prime', monospace;
+    font-size:10px;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    background:none;
+    border:1px solid var(--wood);
+    color:var(--ink-black);
+    padding:6px 8px;
+    cursor:pointer;
+  }
+  .return-btn:hover{ background: var(--wood); color:#f1e6c8; }
+
+  .empty-note{
+    text-align:center;
+    color:#c9b98f;
+    font-family:'Courier Prime', monospace;
+    font-size:12px;
+    padding: 20px;
+  }
+</style>
+</head>
+<body>
+<div class="desk">
+
+  <div class="signage">
+    <h1>◈ CHECKOUT DESK ◈</h1>
+    <div class="sub">every saved link gets a due date card</div>
+  </div>
+
+  <div class="checkout-card">
+    <div class="field-label">What did you just save?</div>
+    <input type="text" id="titleInput" value="The Case for Doing Less, But Better" placeholder="Paste or type a title...">
+
+    <div class="field-label">When should this come due?</div>
+    <div class="due-options">
+      <button class="due-btn" data-days="7">1 Week</button>
+      <button class="due-btn active" data-days="14">2 Weeks</button>
+      <button class="due-btn" data-days="30">1 Month</button>
+    </div>
+
+    <div class="stamp-row">
+      <span style="font-family:'Courier Prime',monospace;font-size:11px;color:#6b5a38;">card catalog no. <span id="cardNo">048</span></span>
+      <button class="stamp-btn" id="stampBtn" onclick="stampIt()">◈ STAMP &amp; FILE ◈</button>
+    </div>
+  </div>
+
+  <div class="shelf-header">On Loan — Sorted by Due Date</div>
+  <div id="shelf"></div>
+
+</div>
+
+<script>
+let cardCounter = 49;
+let selectedDays = 14;
+
+document.querySelectorAll('.due-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.due-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedDays = parseInt(btn.dataset.days);
+  });
+});
+
+// seed data: {title, domain, daysLeft}
+let items = [
+  {title:"Understanding CSS Grid, Finally", domain:"css-tricks.com", daysLeft: 9},
+  {title:"A Short History of Tea Ceremonies", domain:"aeon.co", daysLeft: 2},
+  {title:"10 Productivity Hacks That Don't Work", domain:"medium.com", daysLeft: -3},
+];
+
+function statusFor(daysLeft){
+  if(daysLeft < 0) return {cls:'red', label:'OVERDUE ' + Math.abs(daysLeft) + 'D'};
+  if(daysLeft <= 3) return {cls:'amber', label:'DUE IN ' + daysLeft + 'D'};
+  return {cls:'green', label:'DUE IN ' + daysLeft + 'D'};
+}
+
+function render(){
+  const shelf = document.getElementById('shelf');
+  shelf.innerHTML = '';
+  if(items.length === 0){
+    shelf.innerHTML = '<div class="empty-note">— shelf is empty, nothing on loan —</div>';
+    return;
+  }
+  // sort soonest due first
+  const sorted = [...items].sort((a,b)=>a.daysLeft - b.daysLeft);
+  sorted.forEach((item, idx)=>{
+    const st = statusFor(item.daysLeft);
+    const el = document.createElement('div');
+    el.className = 'card-item';
+    el.innerHTML = `
+      <div class="ci-left">
+        <div class="ci-title">${item.title}</div>
+        <div class="ci-meta">via ${item.domain}</div>
+      </div>
+      <div class="ci-stamp ${st.cls}">${st.label}</div>
+      <button class="return-btn" onclick="returnItem(${items.indexOf(item)}, this)">Mark Read</button>
+    `;
+    shelf.appendChild(el);
+  });
+}
+
+function returnItem(originalIndex, btnEl){
+  const cardEl = btnEl.closest('.card-item');
+  cardEl.classList.add('returning');
+  setTimeout(()=>{
+    items = items.filter(it => it !== items[originalIndex]);
+    render();
+  }, 320);
+}
+
+function stampIt(){
+  const titleInput = document.getElementById('titleInput');
+  const title = titleInput.value.trim() || 'Untitled Save';
+
+  // simple fake domain guess
+  const domains = ['nytimes.com','substack.com','medium.com','github.com','aeon.co'];
+  const domain = domains[Math.floor(Math.random()*domains.length)];
+
+  items.push({title: title, domain: domain, daysLeft: selectedDays});
+
+  cardCounter++;
+  document.getElementById('cardNo').textContent = String(cardCounter).padStart(3,'0');
+  titleInput.value = '';
+
+  // simple stamp feedback: button thud
+  const btn = document.getElementById('stampBtn');
+  btn.style.transform = 'scale(0.9)';
+  setTimeout(()=>{ btn.style.transform = 'scale(1)'; }, 120);
+
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
